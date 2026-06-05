@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster - تطبيق قائمة المهام</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="header-content">
+                <h1>TaskMaster</h1>
+                <p class="subtitle">نظم مهامك وعزز إنتاجيتك</p>
+            </div>
+        </header>
+
+        <main class="app-main">
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <button class="nav-item active" data-filter="all">
+                        <span class="icon">📋</span>
+                        <span>جميع المهام</span>
+                        <span class="badge" id="badge-all">0</span>
+                    </button>
+                    <button class="nav-item" data-filter="active">
+                        <span class="icon">⏳</span>
+                        <span>نشطة</span>
+                        <span class="badge" id="badge-active">0</span>
+                    </button>
+                    <button class="nav-item" data-filter="completed">
+                        <span class="icon">✅</span>
+                        <span>مكتملة</span>
+                        <span class="badge" id="badge-completed">0</span>
+                    </button>
+                    <button class="nav-item" data-filter="high-priority">
+                        <span class="icon">🔴</span>
+                        <span>ذات الأولوية</span>
+                        <span class="badge" id="badge-high-priority">0</span>
+                    </button>
+                </nav>
+
+                <hr class="divider">
+
+                <div class="projects-section">
+                    <h3>المشاريع</h3>
+                    <div id="projects-list" class="projects-list"></div>
+                    <button class="btn-add-project">+ مشروع جديد</button>
+                </div>
+
+                <hr class="divider">
+
+                <div class="storage-info">
+                    <p><strong>التخزين:</strong> <span id="storage-used">0</span> KB</p>
+                    <button class="btn-small" id="btn-clear-completed">مسح المكتملة</button>
+                    <button class="btn-small btn-danger" id="btn-reset-all">إعادة تعيين</button>
+                </div>
+            </aside>
+
+            <div class="content-area">
+                <section class="input-section">
+                    <div class="input-wrapper">
+                        <input type="text" id="task-input" placeholder="أضف مهمة جديدة..." class="task-input">
+                        <button class="btn-add" id="btn-add-task">إضافة</button>
+                    </div>
+                    <div class="input-options">
+                        <select id="priority-select" class="priority-select">
+                            <option value="low">منخفضة</option>
+                            <option value="medium" selected>متوسطة</option>
+                            <option value="high">عالية</option>
+                        </select>
+                        <select id="project-select" class="project-select">
+                            <option value="">اختر مشروع</option>
+                        </select>
+                        <input type="date" id="due-date-input" class="due-date-input">
+                    </div>
+                </section>
+
+                <section class="stats-section">
+                    <div class="stat-card">
+                        <span class="stat-number" id="stat-total">0</span>
+                        <span class="stat-label">الإجمالي</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="stat-active">0</span>
+                        <span class="stat-label">نشطة</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="stat-completed">0</span>
+                        <span class="stat-label">مكتملة</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number" id="stat-completion">0%</span>
+                        <span class="stat-label">الإنجاز</span>
+                    </div>
+                </section>
+
+                <section class="filter-section">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-sort="date-created">الأحدث</button>
+                        <button class="filter-btn" data-sort="due-date">التاريخ</button>
+                        <button class="filter-btn" data-sort="priority">الأولوية</button>
+                        <button class="filter-btn" data-sort="alphabetical">أ-ي</button>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" id="search-input" placeholder="ابحث..." class="search-input">
+                    </div>
+                </section>
+
+                <section class="tasks-section">
+                    <div id="tasks-container" class="tasks-container">
+                        <div class="empty-state">
+                            <span class="empty-icon">📭</span>
+                            <p>لا توجد مهام</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>تعديل</h2>
+                <button class="modal-close">x</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>العنوان</label>
+                    <input type="text" id="edit-task-text" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>الوصف</label>
+                    <textarea id="edit-task-description" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>الأولوية</label>
+                    <select id="edit-task-priority" class="form-input">
+                        <option value="low">منخفضة</option>
+                        <option value="medium">متوسطة</option>
+                        <option value="high">عالية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>التاريخ</label>
+                    <input type="date" id="edit-task-due-date" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>المشروع</label>
+                    <select id="edit-task-project" class="form-input">
+                        <option value="">بدون</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-modal-cancel">إلغاء</button>
+                <button class="btn btn-primary" id="btn-modal-save">حفظ</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="project-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>مشروع جديد</h2>
+                <button class="modal-close">x</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>الاسم</label>
+                    <input type="text" id="project-name" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>اللون</label>
+                    <input type="color" id="project-color" value="#3498db">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="btn-project-cancel">إلغاء</button>
+                <button class="btn btn-primary" id="btn-project-save">إنشاء</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="storage.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
